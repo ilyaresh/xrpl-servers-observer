@@ -1,0 +1,16 @@
+[app/ui]
+version = 8.2.3.3
+modtime = 1647739098.057962000
+
+[app/launcher]
+version = 8.2.3.3
+modtime = 1647739098.061501000
+
+[app/package/check_for_updates]
+version = 8.2.3.3
+modtime = 1647739098.063339000
+
+[views/rippled_logs]
+owner = admin
+version = 8.2.3.3
+modtime = 1647743713.869457000

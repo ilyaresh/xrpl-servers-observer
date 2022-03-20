@@ -1,0 +1,3 @@
+# ignore local files used for development
+local/inputs.conf
+
