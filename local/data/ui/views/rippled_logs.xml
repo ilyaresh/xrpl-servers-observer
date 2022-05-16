@@ -1,4 +1,4 @@
-<form theme="dark">
+<form theme="dark" refresh="30">
   <label>RIPPLED Logs</label>
   <fieldset submitButton="false">
     <input type="time" token="tkn_time">
@@ -8,13 +8,93 @@
         <latest>now</latest>
       </default>
     </input>
+    <input type="dropdown" token="tkn_host">
+      <label>Host</label>
+      <choice value="*">All</choice>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>| tstats count where index=xrpl sourcetype=rippled:log by host
+| fields host</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
   </fieldset>
   <row>
     <panel>
-      <title>ERR and WRN by Partition over time</title>
+      <title>ERR and WRN Summary for [$tkn_host$]</title>
+      <table>
+        <search>
+          <query>index="xrpl" host=$tkn_host$ log_severity = WRN OR log_severity = ERR
+| stats  count by host, log_partition
+| xyseries host, log_partition, count</query>
+          <earliest>-60m@m</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>ERR and WRN by Host over time for [$tkn_host$]</title>
       <chart>
         <search>
-          <query>index="xrpl"  log_severity = WRN OR log_severity = ERR
+          <query>index="xrpl"  host=$tkn_host$ log_severity = WRN OR log_severity = ERR
+| timechart  count by host</query>
+          <earliest>$tkn_time.earliest$</earliest>
+          <latest>$tkn_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>ERR and WRN by Partition over time for [$tkn_host$]</title>
+      <chart>
+        <search>
+          <query>index="xrpl"  host=$tkn_host$ log_severity = WRN OR log_severity = ERR
 | timechart  count by log_partition</query>
           <earliest>$tkn_time.earliest$</earliest>
           <latest>$tkn_time.latest$</latest>
@@ -41,7 +121,7 @@
         <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.chart.style">shiny</option>
-        <option name="charting.drilldown">none</option>
+        <option name="charting.drilldown">all</option>
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
@@ -57,12 +137,12 @@
   </row>
   <row>
     <panel>
-      <title>Long Running Functions</title>
+      <title>Long Running Functions for [$tkn_host$]</title>
       <chart>
         <search>
-          <query>index="xrpl"  LoadMonitor:WRN Job
+          <query>index="xrpl" sourcetype=rippled:log host=$tkn_host$ LoadMonitor:WRN Job
 | rex field=log_message "Job:\s(?&lt;function_name&gt;\w+)\srun:\s(?&lt;function_run&gt;\d+)ms\swait:\s(?&lt;function_wait&gt;\d+)ms"
-| stats avg(function_run) as avg_function_run  count as warnings_count by function_name</query>
+| stats avg(function_run) as avg_function_run  count as warnings_count by function_name, host</query>
           <earliest>$tkn_time.earliest$</earliest>
           <latest>$tkn_time.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -101,15 +181,13 @@
         <option name="trellis.size">medium</option>
       </chart>
     </panel>
-  </row>
-  <row>
     <panel>
-      <title>Long Waiting Functions</title>
+      <title>Long Waiting Functions for [$tkn_host$]</title>
       <chart>
         <search>
-          <query>index="xrpl"  LoadMonitor:WRN Job
+          <query>index="xrpl" sourcetype=rippled:log host=$tkn_host$ LoadMonitor:WRN Job
 | rex field=log_message "Job:\s(?&lt;function_name&gt;\w+)\srun:\s(?&lt;function_run&gt;\d+)ms\swait:\s(?&lt;function_wait&gt;\d+)ms"
-| stats avg(function_wait) as avg_function_wait  count as warnings_count by function_name</query>
+| stats avg(function_wait) as avg_function_wait  count as warnings_count by function_name, host</query>
           <earliest>$tkn_time.earliest$</earliest>
           <latest>$tkn_time.latest$</latest>
           <sampleRatio>1</sampleRatio>
