@@ -1,4 +1,4 @@
-# XRPL Explorer
+# XRPL Servers Observer
 This is app provides parsing and visualisation for the XRP Ledger and rippled logs. 
 It is intended to be used as part of Splunk ecosystem.
 
