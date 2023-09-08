@@ -1,0 +1,8 @@
+state_order,state_value,state_description
+0,Disconnected,"The server is not connected to the XRP Ledger peer-to-peer network whatsoever. It may be running in offline mode, or it may not be able to access the network for whatever reason."
+1,Connected,The server believes it is connected to the network.
+2,Syncing,The server is currently behind on ledger versions. (It is normal for a server to spend a few minutes catching up after you start it.)
+3,Tracking,The server is in agreement with the network
+4,Full,"The server is fully caught-up with the network and could participate in validation, but is not doing so (possibly because it has not been configured as a validator)."
+5,Validating,The server is currently participating in validation of the ledger
+6,Proposing,The server is participating in validation of the ledger and currently proposing its own version.

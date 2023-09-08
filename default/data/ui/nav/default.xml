@@ -1,0 +1,5 @@
+<nav color="#858585" search_view="search">
+	<view name="rippled_status" default="true"/>
+  	<view name="dashboards" />
+    <view name="search" />
+</nav>

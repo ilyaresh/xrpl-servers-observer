@@ -1,5 +1,5 @@
-<form theme="dark" refresh="30">
-  <label>RIPPLED Logs</label>
+<form theme="dark" refresh="30" version="1.1">
+  <label>RIPPLED Status</label>
   <fieldset submitButton="false">
     <input type="time" token="tkn_time">
       <label></label>
@@ -275,6 +275,25 @@
   </row>
   <row>
     <panel>
+      <chart>
+        <title>rippled State</title>
+        <search>
+          <query>| mstats count("rippled.State_Accounting.*_duration") as *  WHERE "index"="xrpl_metrics" span=1m</query>
+          <earliest>$tkn_time.earliest$</earliest>
+          <latest>$tkn_time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.stackMode">stacked100</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+<!--
+  <row>
+    <panel>
       <title>Successful Bootcache connect</title>
       <map>
         <search>
@@ -314,4 +333,64 @@
       </map>
     </panel>
   </row>
+  <row>
+    <panel>
+      <chart>
+        <search>
+          <query>| mstats count("rippled.State_Accounting.*_duration") as state_*  WHERE "index"="xrpl_metrics" span=1m
+| eval state = case(state_Proposing &gt; 0,6, state_Validating &gt; 0,5, state_Full &gt; 0,4, state_Tracking &gt; 0,3, state_Syncing &gt; 0,2, state_Connected &gt; 0,1, state_Disconnected &gt; 0, 0) 
+| eval color_map = case(state&lt;2, "red", state&lt;4, "yellow", sate&gt;=4, "green")
+| timechart max(state) as state by color_map span=1m
+```| eval Disconnected = 0, Cpnnected = 1, Synching = 2, Tracking = 3, Full =4```
+```
+0	Disconnected
+1	Connected
+2	Syncing
+3	Tracking
+4	Full
+5	Validating
+6	Proposing
+| lookup snow_cis_lookup ci_sys_id AS inc_cmdb_ci__sys_id OUTPUT ci_name as inc_cmdb_ci_name 
+    ```</query>
+          <earliest>$tkn_time.earliest$</earliest>
+          <latest>$tkn_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">1</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.fieldColors">{"red":0xFF0000,"yellow":0xFFFF00,"green":0x00FF00}</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  -->
 </form>
